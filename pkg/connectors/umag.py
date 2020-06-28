@@ -1,5 +1,7 @@
 import base64
+from datetime import datetime
 from json.decoder import JSONDecodeError
+from pkg.constants.date_formats import DATE_FORMAT_UMAG
 from pkg.utils.console import panic
 from pkg.utils.decorators import singleton
 from pkg.utils.http import request
@@ -30,7 +32,7 @@ class UmagServer:
         encoded_credentials = base64.standard_b64encode(f'{login}:{password}'.encode('utf-8'))
         headers = {
             **UMAG_BASIC_HEADERS,
-            'Authorization': f'Basic {str(encoded_credentials, "utf-8")}'
+            'Authorization': f'Basic {str(encoded_credentials, "utf-8")}',
         }
         response = request('GET', self.__base_url + 'cabinet/org/auth/authenticate', headers)
 
@@ -41,3 +43,16 @@ class UmagServer:
             return token
         except JSONDecodeError:
             panic(f'Invalid login or password: {login} {password}')
+
+    def get_sales(self, store_id: int, object_id: str, beg_date: datetime, end_date: datetime):
+        headers = {
+            **UMAG_BASIC_HEADERS,
+            'Authorization': self.__access_token,
+        }
+        querystring = {
+            'storeId': store_id,
+            'objectId': object_id,
+            'begDate': beg_date.strftime(DATE_FORMAT_UMAG),
+            'endDate': end_date.strftime(DATE_FORMAT_UMAG),
+        }
+        return request('GET', self.__base_url + 'integration/shym-plaza/sales.xml', headers, params=querystring).text
