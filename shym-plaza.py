@@ -96,13 +96,18 @@ if __name__ == '__main__':
         download_sales(beg, end)
 
     if args.upload_to_ftp:
-        LOG.info('Connecting to FTP...')
+        ftp_host = CONFIG['ftp']['host']
+        ftp_port = int(CONFIG['ftp']['port'])
+        ftp_login = CONFIG['ftp']['login']
+        ftp_password = CONFIG['ftp']['password']
+        ftp_upload_dir = CONFIG['ftp']['upload_dir']
+        LOG.info(f'Connecting to FTP {ftp_login}@{ftp_host}:{ftp_port}...')
 
         try:
             ftp = FTP()
-            ftp.connect('ftp.drivehq.com', 21)
-            LOG.info(ftp.login('vodchella', '*****'))
-            ftp.cwd('/wwwhome/images/')
+            ftp.connect(ftp_host, ftp_port)
+            LOG.info(ftp.login(ftp_login, ftp_password))
+            ftp.cwd(ftp_upload_dir)
 
             files_cnt = 0
             for file_name in os.listdir(CONFIG['output_dir']):
