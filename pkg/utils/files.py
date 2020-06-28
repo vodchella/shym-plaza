@@ -10,3 +10,9 @@ def read_file(file_name: str):
     lines = f.read()
     f.close()
     return lines
+
+
+def write_file(file_name: str, data: str):
+    f = open(file_name, 'w')
+    f.write(data)
+    f.close()
