@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+
+import argparse
 import os
 import sys
 from datetime import datetime
@@ -11,22 +14,39 @@ from pkg.utils.files import write_file
 from pkg.utils.logger import DEFAULT_LOGGER as LOG
 
 
+def create_argparse():
+    parser = argparse.ArgumentParser(description=SOFTWARE_VERSION)
+    parser.add_argument(
+        '-b',
+        '--beg-date',
+        required=True,
+        help=f'Beginning of period (dd.mm.yyyy hh24:mi:ss)'
+    )
+    parser.add_argument(
+        '-e',
+        '--end-date',
+        required=True,
+        help='End of period (dd.mm.yyyy hh24:mi:ss)'
+    )
+    return parser.parse_args()
+
+
 if __name__ == '__main__':
     if sys.version_info < (3, 8):
         panic('We need minimum Python version 3.8 to run. Current version: %s.%s.%s' % sys.version_info[:3])
+
+    args = create_argparse()
 
     LOG.info(f'{SOFTWARE_VERSION} started')
     with UmagServer() as u:
         LOG.info(f'Server API address: {u}')
 
-        beg_date_str = '28.06.2020 00:00:00'
-        end_date_str = '28.06.2020 23:59:59'
-        beg_date = datetime.strptime(beg_date_str, DATE_FORMAT_FULL)
-        end_date = datetime.strptime(end_date_str, DATE_FORMAT_FULL)
+        beg_date = datetime.strptime(args.beg_date, DATE_FORMAT_FULL)
+        end_date = datetime.strptime(args.end_date, DATE_FORMAT_FULL)
         beg_date_file = beg_date.strftime(DATE_FORMAT_FILE)
         end_date_file = end_date.strftime(DATE_FORMAT_FILE)
 
-        LOG.info(f'Period specified: {beg_date_str} - {end_date_str}\n')
+        LOG.info(f'Period specified: {args.beg_date} - {args.end_date}\n')
 
         err_count = 0
         for store in CONFIG['stores']:
