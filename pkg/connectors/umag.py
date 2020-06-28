@@ -30,6 +30,9 @@ class UmagServer:
     def __exit__(self, exc_type, exc_val, exc_tb):
         pass
 
+    def __str__(self):
+        return self.__base_url
+
     def auth(self, login: str, password: str):
         encoded_credentials = base64.standard_b64encode(f'{login}:{password}'.encode('utf-8'))
         headers = {
@@ -44,7 +47,7 @@ class UmagServer:
             self.__access_token = token
             return token
         except JSONDecodeError:
-            panic(f'Invalid login or password: {login} {password}')
+            return None
 
     def get_sales(self, store_id: int, object_id: str, beg_date: datetime, end_date: datetime):
         headers = {
