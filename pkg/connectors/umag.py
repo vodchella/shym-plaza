@@ -5,7 +5,7 @@ from pkg.config import CONFIG
 from pkg.constants.date_formats import DATE_FORMAT_UMAG
 from pkg.utils.decorators import singleton
 from pkg.utils.http import request
-from pkg.utils.logger import UMAG_LOGGER_NAME
+from pkg.utils.logger import UMAG_LOGGER
 
 UMAG_BASIC_HEADERS = {
     'api-ver': '0.9',
@@ -64,5 +64,5 @@ class UmagServer:
         if response.ok:
             return response.text
         else:
-            UMAG_LOGGER_NAME.error(f'{response.status_code} - {response.text}\n')
+            UMAG_LOGGER.error(f'{response.status_code} - {response.text}\n')
             return None
