@@ -14,5 +14,5 @@ if __name__ == '__main__':
             u.auth(store['login'], store['password'])
             beg_date = datetime.strptime('28.06.2020 00:00:00', DATE_FORMAT_FULL)
             end_date = datetime.strptime('28.06.2020 23:59:59', DATE_FORMAT_FULL)
-            print(u.get_sales(1, store['password'], beg_date, end_date))
+            print(u.get_sales(1, store['obj_id'], beg_date, end_date))
 
