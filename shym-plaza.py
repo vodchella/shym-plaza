@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
-import argparse
 import os
 import sys
 from datetime import datetime
 from ftplib import FTP
+from pkg.arg_parser import create_argparse
 from pkg.config import CONFIG
 from pkg.connectors.umag import UmagServer
 from pkg.constants.date_formats import DATE_FORMAT_FULL, DATE_FORMAT_FILE
@@ -13,35 +13,6 @@ from pkg.utils.console import panic
 from pkg.utils.errors import get_raised_error
 from pkg.utils.files import write_file
 from pkg.utils.logger import DEFAULT_LOGGER as LOG
-
-
-def create_argparse():
-    parser = argparse.ArgumentParser(description=SOFTWARE_VERSION)
-    parser.add_argument(
-        '-b',
-        '--beg-date',
-        required=True,
-        help=f'Beginning of period (dd.mm.yyyy hh24:mi:ss)'
-    )
-    parser.add_argument(
-        '-e',
-        '--end-date',
-        required=True,
-        help='End of period (dd.mm.yyyy hh24:mi:ss)'
-    )
-    parser.add_argument(
-        '-g',
-        '--get-sales',
-        action='store_true',
-        help='Get sales from UMAG'
-    )
-    parser.add_argument(
-        '-u',
-        '--upload-to-ftp',
-        action='store_true',
-        help='Upload xml files to ftp-server'
-    )
-    return parser.parse_args()
 
 
 def download_sales(beg_date: datetime, end_date: datetime):
