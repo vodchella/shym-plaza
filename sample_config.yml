@@ -1,0 +1,13 @@
+umag:
+  host: localhost
+  port: 8080
+  https: false
+stores:
+  - id: 1
+    obj_id: 0x123456789
+    login: +77761522222
+    password: 11111
+output_dir: /home/twr/projects/shym-plaza/output/
+log:
+  file_name: shym-plaza.log
+  path: /home/twr/projects/shym-plaza/log/
