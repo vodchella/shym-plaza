@@ -16,8 +16,8 @@ from pkg.utils.logger import DEFAULT_LOGGER, FTP_LOGGER, UMAG_LOGGER
 
 
 def download_sales(beg_date: datetime, end_date: datetime):
-    with UmagServer() as u:
-        UMAG_LOGGER.info(f'Getting sales from UMAG {u}...')
+    with UmagServer() as umag:
+        UMAG_LOGGER.info(f'Getting sales from UMAG {umag}...')
 
         beg_date_file = beg_date.strftime(DATE_FORMAT_FILE)
         end_date_file = end_date.strftime(DATE_FORMAT_FILE)
@@ -32,11 +32,11 @@ def download_sales(beg_date: datetime, end_date: datetime):
             UMAG_LOGGER.info(f'Processing store #{store_id} ({obj_id})...')
 
             try:
-                if u.auth(store['login'], store['password']):
+                if umag.auth(store['login'], store['password']):
                     file_name = f'{obj_id}_{beg_date_file}_{end_date_file}.xml'
                     file_path = os.path.join(CONFIG['output_dir'], file_name)
 
-                    sales = u.get_sales(store_id, obj_id, beg_date, end_date)
+                    sales = umag.get_sales(store_id, obj_id, beg_date, end_date)
                     if sales:
                         write_file(file_path, sales)
                         UMAG_LOGGER.info(f'Sales was writen to {file_name}\n')
