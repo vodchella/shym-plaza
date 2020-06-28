@@ -79,6 +79,34 @@ def download_sales(beg_date: datetime, end_date: datetime):
         LOG.info(f'Processed stores/errors: {len(CONFIG["stores"])}/{err_count}\n')
 
 
+def upload_files():
+    ftp_host = CONFIG['ftp']['host']
+    ftp_port = int(CONFIG['ftp']['port'])
+    ftp_login = CONFIG['ftp']['login']
+    ftp_password = CONFIG['ftp']['password']
+    ftp_upload_dir = CONFIG['ftp']['upload_dir']
+    LOG.info(f'Connecting to FTP {ftp_login}@{ftp_host}:{ftp_port}...')
+
+    try:
+        ftp = FTP()
+        ftp.connect(ftp_host, ftp_port)
+        LOG.info(ftp.login(ftp_login, ftp_password))
+        ftp.cwd(ftp_upload_dir)
+
+        files_cnt = 0
+        for file_name in os.listdir(CONFIG['output_dir']):
+            if file_name[-4:] == '.xml':
+                file_path = os.path.join(CONFIG['output_dir'], file_name)
+                with open(file_path, 'rb') as fobj:
+                    LOG.info(f'Uploading file {file_name}...')
+                    ftp.storbinary('STOR ' + file_name, fobj, 1024)
+                    files_cnt += 1
+
+        LOG.info(f'Uploaded files: {files_cnt}')
+    except:
+        LOG.error(get_raised_error(True))
+
+
 if __name__ == '__main__':
     if sys.version_info < (3, 8):
         panic('We need minimum Python version 3.8 to run. Current version: %s.%s.%s' % sys.version_info[:3])
@@ -96,28 +124,4 @@ if __name__ == '__main__':
         download_sales(beg, end)
 
     if args.upload_to_ftp:
-        ftp_host = CONFIG['ftp']['host']
-        ftp_port = int(CONFIG['ftp']['port'])
-        ftp_login = CONFIG['ftp']['login']
-        ftp_password = CONFIG['ftp']['password']
-        ftp_upload_dir = CONFIG['ftp']['upload_dir']
-        LOG.info(f'Connecting to FTP {ftp_login}@{ftp_host}:{ftp_port}...')
-
-        try:
-            ftp = FTP()
-            ftp.connect(ftp_host, ftp_port)
-            LOG.info(ftp.login(ftp_login, ftp_password))
-            ftp.cwd(ftp_upload_dir)
-
-            files_cnt = 0
-            for file_name in os.listdir(CONFIG['output_dir']):
-                if file_name[-4:] == '.xml':
-                    file_path = os.path.join(CONFIG['output_dir'], file_name)
-                    with open(file_path, 'rb') as fobj:
-                        LOG.info(f'Uploading file {file_name}...')
-                        ftp.storbinary('STOR ' + file_name, fobj, 1024)
-                        files_cnt += 1
-
-            LOG.info(f'Uploaded files: {files_cnt}')
-        except:
-            LOG.error(get_raised_error(True))
+        upload_files()
