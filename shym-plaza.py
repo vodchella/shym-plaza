@@ -6,6 +6,7 @@ from pkg.connectors.umag import UmagServer
 from pkg.constants.date_formats import DATE_FORMAT_FULL, DATE_FORMAT_FILE
 from pkg.constants.version import SOFTWARE_VERSION
 from pkg.utils.console import panic
+from pkg.utils.errors import get_raised_error
 from pkg.utils.files import write_file
 from pkg.utils.logger import DEFAULT_LOGGER as LOG
 
@@ -27,20 +28,27 @@ if __name__ == '__main__':
 
         LOG.info(f'Period specified: {beg_date_str} - {end_date_str}\n')
 
+        err_count = 0
         for store in CONFIG['stores']:
             obj_id = store['obj_id']
             store_id = store['id']
 
             LOG.info(f'Processing store #{store_id} ({obj_id})...')
 
-            if u.auth(store['login'], store['password']):
-                file_name = f'{obj_id}_{beg_date_file}_{end_date_file}.xml'
-                file_path = os.path.join(CONFIG['output_dir'], file_name)
+            try:
+                if u.auth(store['login'], store['password']):
+                    file_name = f'{obj_id}_{beg_date_file}_{end_date_file}.xml'
+                    file_path = os.path.join(CONFIG['output_dir'], file_name)
 
-                sales = u.get_sales(store_id, obj_id, beg_date, end_date)
-                if sales:
-                    write_file(file_path, sales)
-                    LOG.info(f'Sales was writen to {file_name}\n')
-            else:
-                LOG.error(f'Invalid login or password\n')
+                    sales = u.get_sales(store_id, obj_id, beg_date, end_date)
+                    if sales:
+                        write_file(file_path, sales)
+                        LOG.info(f'Sales was writen to {file_name}\n')
+                else:
+                    LOG.error(f'Invalid login or password\n')
+                    err_count += 1
+            except:
+                LOG.error(get_raised_error(True))
+                err_count += 1
 
+        LOG.info(f'Processed stores/errors: {len(CONFIG["stores"])}/{err_count}')
