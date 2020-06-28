@@ -4,7 +4,7 @@ import os
 import sys
 from pkg.config import CONFIG
 from pkg.constants.date_formats import DATE_FORMAT_FULL
-from pkg.constants.logging import *
+from pkg.constants.logger import *
 
 LOG_CONFIG = {
     'version': 1,
