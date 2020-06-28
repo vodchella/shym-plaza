@@ -50,7 +50,7 @@ def download_sales(beg_date: datetime, end_date: datetime):
         LOG.info(f'Processed stores/errors: {len(CONFIG["stores"])}/{err_count}\n')
 
 
-def upload_files():
+def upload_files(delete_uploaded_files: bool):
     ftp_host = CONFIG['ftp']['host']
     ftp_port = int(CONFIG['ftp']['port'])
     ftp_login = CONFIG['ftp']['login']
@@ -58,9 +58,11 @@ def upload_files():
     ftp_upload_dir = CONFIG['ftp']['upload_dir']
     LOG.info(f'Connecting to FTP {ftp_login}@{ftp_host}:{ftp_port}...')
 
+    ftp_connected = False
+    ftp = FTP()
     try:
-        ftp = FTP()
         ftp.connect(ftp_host, ftp_port)
+        ftp_connected = True
         LOG.info(ftp.login(ftp_login, ftp_password))
         ftp.cwd(ftp_upload_dir)
 
@@ -73,9 +75,16 @@ def upload_files():
                     ftp.storbinary('STOR ' + file_name, fobj, 1024)
                     files_cnt += 1
 
+                    if delete_uploaded_files:
+                        os.remove(file_path)
+                        LOG.info(f'{file_name} was deleted')
+
         LOG.info(f'Uploaded files: {files_cnt}')
     except:
         LOG.error(get_raised_error(True))
+    finally:
+        if ftp_connected:
+            ftp.quit()
 
 
 if __name__ == '__main__':
@@ -95,4 +104,4 @@ if __name__ == '__main__':
         download_sales(beg, end)
 
     if args.upload_to_ftp:
-        upload_files()
+        upload_files(args.delete_uploaded_files)

@@ -26,6 +26,12 @@ def create_argparse():
         '-u',
         '--upload-to-ftp',
         action='store_true',
-        help='Upload xml files to ftp-server'
+        help='Upload XML files to FTP-server'
+    )
+    parser.add_argument(
+        '-d',
+        '--delete-uploaded-files',
+        action='store_true',
+        help='Delete XML files which was successfully uploaded to FTP-server'
     )
     return parser.parse_args()
