@@ -28,21 +28,25 @@ def create_argparse():
         required=True,
         help='End of period (dd.mm.yyyy hh24:mi:ss)'
     )
+    parser.add_argument(
+        '-g',
+        '--get-sales',
+        action='store_true',
+        help='Get sales from UMAG'
+    )
+    parser.add_argument(
+        '-u',
+        '--upload-to-ftp',
+        action='store_true',
+        help='Upload xml files to ftp-server'
+    )
     return parser.parse_args()
 
 
-if __name__ == '__main__':
-    if sys.version_info < (3, 8):
-        panic('We need minimum Python version 3.8 to run. Current version: %s.%s.%s' % sys.version_info[:3])
-
-    args = create_argparse()
-
-    LOG.info(f'{SOFTWARE_VERSION} started')
+def download_sales(beg_date: datetime, end_date: datetime):
     with UmagServer() as u:
-        LOG.info(f'Server API address: {u}')
+        LOG.info(f'Getting sales from UMAG {u}...')
 
-        beg_date = datetime.strptime(args.beg_date, DATE_FORMAT_FULL)
-        end_date = datetime.strptime(args.end_date, DATE_FORMAT_FULL)
         beg_date_file = beg_date.strftime(DATE_FORMAT_FILE)
         end_date_file = end_date.strftime(DATE_FORMAT_FILE)
 
@@ -71,4 +75,24 @@ if __name__ == '__main__':
                 LOG.error(get_raised_error(True))
                 err_count += 1
 
-        LOG.info(f'Processed stores/errors: {len(CONFIG["stores"])}/{err_count}')
+        LOG.info(f'Processed stores/errors: {len(CONFIG["stores"])}/{err_count}\n')
+
+
+if __name__ == '__main__':
+    if sys.version_info < (3, 8):
+        panic('We need minimum Python version 3.8 to run. Current version: %s.%s.%s' % sys.version_info[:3])
+
+    args = create_argparse()
+
+    if (not args.get_sales) and (not args.upload_to_ftp):
+        panic('Specify -g or/and -u option. See --help for details')
+
+    LOG.info(f'{SOFTWARE_VERSION} started\n')
+
+    if args.get_sales:
+        beg = datetime.strptime(args.beg_date, DATE_FORMAT_FULL)
+        end = datetime.strptime(args.end_date, DATE_FORMAT_FULL)
+        download_sales(beg, end)
+
+    if args.upload_to_ftp:
+        LOG.info('Uploading to FTP...')
