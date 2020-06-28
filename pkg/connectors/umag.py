@@ -1,6 +1,7 @@
 import base64
 from datetime import datetime
 from json.decoder import JSONDecodeError
+from pkg.config import CONFIG
 from pkg.constants.date_formats import DATE_FORMAT_UMAG
 from pkg.utils.console import panic
 from pkg.utils.decorators import singleton
@@ -18,9 +19,10 @@ class UmagServer:
     __access_token = None
 
     def __init__(self):
-        addr = 'localhost'
-        port = 8080
-        self.__base_url = f'http://{addr}:{port}/rest/'
+        addr = CONFIG['umag']['host']
+        port = int(CONFIG['umag']['port'])
+        s = 's' if CONFIG['umag']['https'] == 'true' else ''
+        self.__base_url = f'http{s}://{addr}:{port}/rest/'
 
     def __enter__(self):
         return self
