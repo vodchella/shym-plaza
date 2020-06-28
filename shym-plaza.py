@@ -40,6 +40,8 @@ def download_sales(beg_date: datetime, end_date: datetime):
                     if sales:
                         write_file(file_path, sales)
                         UMAG_LOGGER.info(f'Sales was writen to {file_name}\n')
+                    else:
+                        err_count += 1
                 else:
                     UMAG_LOGGER.error(f'Invalid login or password\n')
                     err_count += 1
