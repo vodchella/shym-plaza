@@ -1,4 +1,6 @@
 import base64
+from json.decoder import JSONDecodeError
+from pkg.utils.console import panic
 from pkg.utils.decorators import singleton
 from pkg.utils.http import request
 
@@ -30,4 +32,12 @@ class UmagServer:
             **UMAG_BASIC_HEADERS,
             'Authorization': f'Basic {str(encoded_credentials, "utf-8")}'
         }
-        return request('GET', self.__base_url + 'cabinet/org/auth/authenticate', headers).json()
+        response = request('GET', self.__base_url + 'cabinet/org/auth/authenticate', headers)
+
+        try:
+            resp_json = response.json()
+            token = resp_json['properties']['access_token']
+            self.__access_token = token
+            return token
+        except JSONDecodeError:
+            panic(f'Invalid login or password: {login} {password}')
