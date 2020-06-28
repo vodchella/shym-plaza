@@ -4,6 +4,7 @@ import argparse
 import os
 import sys
 from datetime import datetime
+from ftplib import FTP
 from pkg.config import CONFIG
 from pkg.connectors.umag import UmagServer
 from pkg.constants.date_formats import DATE_FORMAT_FULL, DATE_FORMAT_FILE
@@ -95,4 +96,23 @@ if __name__ == '__main__':
         download_sales(beg, end)
 
     if args.upload_to_ftp:
-        LOG.info('Uploading to FTP...')
+        LOG.info('Connecting to FTP...')
+
+        try:
+            ftp = FTP()
+            ftp.connect('ftp.drivehq.com', 21)
+            LOG.info(ftp.login('vodchella', '*****'))
+            ftp.cwd('/wwwhome/images/')
+
+            files_cnt = 0
+            for file_name in os.listdir(CONFIG['output_dir']):
+                if file_name[-4:] == '.xml':
+                    file_path = os.path.join(CONFIG['output_dir'], file_name)
+                    with open(file_path, 'rb') as fobj:
+                        LOG.info(f'Uploading file {file_name}...')
+                        ftp.storbinary('STOR ' + file_name, fobj, 1024)
+                        files_cnt += 1
+
+            LOG.info(f'Uploaded files: {files_cnt}')
+        except:
+            LOG.error(get_raised_error(True))
