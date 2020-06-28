@@ -33,9 +33,19 @@ LOG_CONFIG = {
             'level': 'DEBUG',
             'handlers': ['internal', 'timedRotatingFile']
         },
+        FTP_LOGGER_NAME: {
+            'level': 'DEBUG',
+            'handlers': ['internal', 'timedRotatingFile']
+        },
+        UMAG_LOGGER_NAME: {
+            'level': 'DEBUG',
+            'handlers': ['internal', 'timedRotatingFile']
+        },
     }
 }
 
 
 logging.config.dictConfig(LOG_CONFIG)
 DEFAULT_LOGGER = logging.getLogger(DEFAULT_LOGGER_NAME)
+FTP_LOGGER = logging.getLogger(FTP_LOGGER_NAME)
+UMAG_LOGGER = logging.getLogger(UMAG_LOGGER_NAME)
