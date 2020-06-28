@@ -3,9 +3,9 @@ from datetime import datetime
 from json.decoder import JSONDecodeError
 from pkg.config import CONFIG
 from pkg.constants.date_formats import DATE_FORMAT_UMAG
-from pkg.utils.console import panic
 from pkg.utils.decorators import singleton
 from pkg.utils.http import request
+from pkg.utils.logger import DEFAULT_LOGGER as LOG
 
 UMAG_BASIC_HEADERS = {
     'api-ver': '0.9',
@@ -60,4 +60,9 @@ class UmagServer:
             'begDate': beg_date.strftime(DATE_FORMAT_UMAG),
             'endDate': end_date.strftime(DATE_FORMAT_UMAG),
         }
-        return request('GET', self.__base_url + 'integration/shym-plaza/sales.xml', headers, params=querystring).text
+        response = request('GET', self.__base_url + 'integration/shym-plaza/sales.xml', headers, params=querystring)
+        if response.ok:
+            return response.text
+        else:
+            LOG.error(f'{response.status_code} - {response.text}\n')
+            return None
