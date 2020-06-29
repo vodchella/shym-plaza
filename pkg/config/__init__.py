@@ -1,9 +1,11 @@
 import os
 import yaml
 from pkg.arg_parser import create_argparse
+from pkg.utils import get_project_root
 from pkg.utils.console import panic
 from pkg.utils.files import read_file
 
+os.chdir(get_project_root())
 args = create_argparse()
 try:
     if args.config_file:
