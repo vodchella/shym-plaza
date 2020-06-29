@@ -19,10 +19,10 @@ class UmagServer:
     __access_token = None
 
     def __init__(self):
-        addr = CONFIG['umag']['host']
-        port = int(CONFIG['umag']['port'])
+        host = CONFIG['umag']['host']
+        port = ':' + CONFIG['umag']['port'] if 'port' in CONFIG['umag'] else ''
         s = 's' if CONFIG['umag']['https'] == 'true' else ''
-        self.__base_url = f'http{s}://{addr}:{port}/rest/'
+        self.__base_url = f'http{s}://{host}{port}/rest/'
 
     def __enter__(self):
         return self
