@@ -58,7 +58,7 @@ def upload_files(delete_uploaded_files: bool):
     ftp_login = CONFIG['ftp']['login']
     ftp_password = CONFIG['ftp']['password']
     ftp_upload_dir = CONFIG['ftp']['upload_dir']
-    FTP_LOGGER.info(f'Connecting to FTP {ftp_login}@{ftp_host}:{ftp_port}...')
+    FTP_LOGGER.info(f'Connecting to ftp://{ftp_login}@{ftp_host}:{ftp_port}...')
 
     ftp_connected = False
     ftp = FTP()
