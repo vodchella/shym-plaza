@@ -101,6 +101,9 @@ if __name__ == '__main__':
     DEFAULT_LOGGER.info(f'{SOFTWARE_VERSION} started\n')
 
     if args.get_sales:
+        if (not args.beg_date) or (not args.end_date):
+            panic('Specify -b and -e options. See --help for details')
+
         beg = datetime.strptime(args.beg_date, DATE_FORMAT_FULL)
         end = datetime.strptime(args.end_date, DATE_FORMAT_FULL)
         download_sales(beg, end)

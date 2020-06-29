@@ -7,14 +7,12 @@ def create_argparse():
     parser.add_argument(
         '-b',
         '--beg-date',
-        required=True,
-        help=f'Beginning of period (dd.mm.yyyy hh24:mi:ss)'
+        help=f'Beginning of period, mandatory if -g specified (dd.mm.yyyy hh24:mi:ss)'
     )
     parser.add_argument(
         '-e',
         '--end-date',
-        required=True,
-        help='End of period (dd.mm.yyyy hh24:mi:ss)'
+        help='End of period, mandatory if -g specified (dd.mm.yyyy hh24:mi:ss)'
     )
     parser.add_argument(
         '-g',
