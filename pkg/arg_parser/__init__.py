@@ -32,4 +32,9 @@ def create_argparse():
         action='store_true',
         help='Delete XML files which was successfully uploaded to FTP-server'
     )
+    parser.add_argument(
+        '-c',
+        '--config-file',
+        help='Full path to YAML config file'
+    )
     return parser.parse_args()

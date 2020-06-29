@@ -5,7 +5,7 @@ import sys
 from datetime import datetime
 from ftplib import FTP
 from pkg.arg_parser import create_argparse
-from pkg.config import CONFIG
+from pkg.config import CONFIG, CFG_FILE
 from pkg.connectors.umag import UmagServer
 from pkg.constants.date_formats import DATE_FORMAT_FULL, DATE_FORMAT_FILE
 from pkg.constants.version import SOFTWARE_VERSION, APP_NAME
@@ -98,7 +98,8 @@ if __name__ == '__main__':
     if (not args.get_sales) and (not args.upload_to_ftp):
         panic('Specify -g or/and -u option. See --help for details')
 
-    DEFAULT_LOGGER.info(f'{SOFTWARE_VERSION} started\n')
+    DEFAULT_LOGGER.info(f'{SOFTWARE_VERSION} started')
+    DEFAULT_LOGGER.info(f'Config loaded from {CFG_FILE}\n')
 
     if args.get_sales:
         if (not args.beg_date) or (not args.end_date):
