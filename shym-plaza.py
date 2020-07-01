@@ -53,40 +53,49 @@ def download_sales(beg_date: datetime, end_date: datetime):
 
 
 def upload_files(delete_uploaded_files: bool):
-    ftp_host = CONFIG['ftp']['host']
-    ftp_port = int(CONFIG['ftp']['port'])
-    ftp_login = CONFIG['ftp']['login']
-    ftp_password = CONFIG['ftp']['password']
-    ftp_upload_dir = CONFIG['ftp']['upload_dir']
-    FTP_LOGGER.info(f'Connecting to ftp://{ftp_login}@{ftp_host}:{ftp_port}...')
+    for server in CONFIG['ftp']:
+        ftp_id = server['id']
+        obj_ids = [s['obj_id'] for s in filter(lambda s: s['ftp_id'] == ftp_id, CONFIG['stores'])]
 
-    ftp_connected = False
-    ftp = FTP()
-    try:
-        ftp.connect(ftp_host, ftp_port)
-        ftp_connected = True
-        FTP_LOGGER.info(ftp.login(ftp_login, ftp_password))
-        ftp.cwd(ftp_upload_dir)
+        ftp_host = server['host']
+        ftp_port = int(server['port'])
+        ftp_login = server['login']
+        ftp_password = server['password']
+        ftp_upload_dir = server['upload_dir']
+        FTP_LOGGER.info(f'Connecting to ftp://{ftp_login}@{ftp_host}:{ftp_port}...')
 
-        files_cnt = 0
-        for file_name in os.listdir(CONFIG['output_dir']):
-            if file_name[-4:] == '.xml':
-                file_path = os.path.join(CONFIG['output_dir'], file_name)
-                with open(file_path, 'rb') as fobj:
-                    FTP_LOGGER.info(f'Uploading file {file_name}...')
-                    ftp.storbinary('STOR ' + file_name, fobj, 1024)
-                    files_cnt += 1
+        ftp_connected = False
+        ftp = FTP()
+        try:
+            ftp.connect(ftp_host, ftp_port)
+            ftp_connected = True
+            FTP_LOGGER.info(ftp.login(ftp_login, ftp_password))
+            ftp.cwd(ftp_upload_dir)
 
-                    if delete_uploaded_files:
-                        os.remove(file_path)
-                        FTP_LOGGER.info(f'{file_name} was deleted')
+            files_cnt = 0
+            for file_name in os.listdir(CONFIG['output_dir']):
+                prefix = None
+                i = file_name.find('_')
+                if i != -1:
+                    prefix = file_name[:i]
 
-        FTP_LOGGER.info(f'Uploaded files: {files_cnt}\n')
-    except:
-        FTP_LOGGER.error(get_raised_error(True))
-    finally:
-        if ftp_connected:
-            ftp.quit()
+                if file_name[-4:] == '.xml' and prefix in obj_ids:
+                    file_path = os.path.join(CONFIG['output_dir'], file_name)
+                    with open(file_path, 'rb') as fobj:
+                        FTP_LOGGER.info(f'Uploading file {file_name}...')
+                        ftp.storbinary('STOR ' + file_name, fobj, 1024)
+                        files_cnt += 1
+
+                        if delete_uploaded_files:
+                            os.remove(file_path)
+                            FTP_LOGGER.info(f'{file_name} was deleted')
+
+            FTP_LOGGER.info(f'Uploaded files: {files_cnt}\n')
+        except:
+            FTP_LOGGER.error(get_raised_error(True))
+        finally:
+            if ftp_connected:
+                ftp.quit()
 
 
 if __name__ == '__main__':

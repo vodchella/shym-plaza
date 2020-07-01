@@ -3,13 +3,15 @@ umag:
   port: 8080
   https: false
 ftp:
-  host: ftp.drivehq.com
-  port: 21
-  login: ftp_user
-  password: ftp_password
-  upload_dir: /wwwhome/images/
+  - id: 1
+    host: ftp.drivehq.com
+    port: 21
+    login: ftp_user
+    password: ftp_password
+    upload_dir: /wwwhome/images/
 stores:
   - id: 1
+    ftp_id: 1
     obj_id: 0x123456789
     login: +77761522222
     password: 11111
