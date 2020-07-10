@@ -2,12 +2,12 @@
 
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 from ftplib import FTP
 from pkg.arg_parser import create_argparse
 from pkg.config import CONFIG, CFG_FILE
 from pkg.connectors.umag import UmagServer
-from pkg.constants.date_formats import DATE_FORMAT_FULL, DATE_FORMAT_FILE
+from pkg.constants.date_formats import DATE_FORMAT_FULL, DATE_FORMAT_FILE, DATE_FORMAT
 from pkg.constants.version import SOFTWARE_VERSION, APP_NAME
 from pkg.utils.console import panic
 from pkg.utils.errors import get_raised_error
@@ -21,8 +21,10 @@ def download_sales(beg_date: datetime, end_date: datetime):
 
         beg_date_file = beg_date.strftime(DATE_FORMAT_FILE)
         end_date_file = end_date.strftime(DATE_FORMAT_FILE)
+        beg_date_str = beg_date.strftime(DATE_FORMAT_FULL)
+        end_date_str = end_date.strftime(DATE_FORMAT_FULL)
 
-        UMAG_LOGGER.info(f'Period specified: {args.beg_date} - {args.end_date}\n')
+        UMAG_LOGGER.info(f'Period specified: {beg_date_str} - {end_date_str}\n')
 
         err_count = 0
         for store in CONFIG['stores']:
@@ -111,11 +113,18 @@ if __name__ == '__main__':
     DEFAULT_LOGGER.info(f'Config loaded from {CFG_FILE}\n')
 
     if args.get_sales:
-        if (not args.beg_date) or (not args.end_date):
-            panic('Specify -b and -e options. See --help for details')
+        if args.yesterday:
+            yesterday_str = datetime.strftime(datetime.now() - timedelta(days=1), DATE_FORMAT)
+            beg_str = f'{yesterday_str} 00:00:00'
+            end_str = f'{yesterday_str} 23:59:59'
+        else:
+            if (not args.beg_date) or (not args.end_date):
+                panic('Specify -b and -e options. See --help for details')
+            beg_str = args.beg_date
+            end_str = args.end_date
 
-        beg = datetime.strptime(args.beg_date, DATE_FORMAT_FULL)
-        end = datetime.strptime(args.end_date, DATE_FORMAT_FULL)
+        beg = datetime.strptime(beg_str, DATE_FORMAT_FULL)
+        end = datetime.strptime(end_str, DATE_FORMAT_FULL)
         download_sales(beg, end)
 
     if args.upload_to_ftp:

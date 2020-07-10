@@ -15,6 +15,12 @@ def create_argparse():
         help='End of period, mandatory if -g specified (dd.mm.yyyy hh24:mi:ss)'
     )
     parser.add_argument(
+        '-y',
+        '--yesterday',
+        action='store_true',
+        help='Set period as yesterday'
+    )
+    parser.add_argument(
         '-g',
         '--get-sales',
         action='store_true',
