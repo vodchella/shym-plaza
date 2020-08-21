@@ -16,3 +16,9 @@ def write_file(file_name: str, data: str):
     f = open(file_name, 'w')
     f.write(data)
     f.close()
+
+
+def write_file_binary(file_name: str, data: str):
+    f = open(file_name, 'wb')
+    f.write(data.encode('utf-8'))
+    f.close()

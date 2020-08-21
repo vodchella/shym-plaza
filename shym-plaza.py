@@ -11,7 +11,7 @@ from pkg.constants.date_formats import DATE_FORMAT_FULL, DATE_FORMAT_FILE, DATE_
 from pkg.constants.version import SOFTWARE_VERSION, APP_NAME
 from pkg.utils.console import panic
 from pkg.utils.errors import get_raised_error
-from pkg.utils.files import write_file
+from pkg.utils.files import write_file_binary
 from pkg.utils.logger import DEFAULT_LOGGER, FTP_LOGGER, UMAG_LOGGER
 
 
@@ -40,7 +40,7 @@ def download_sales(beg_date: datetime, end_date: datetime):
 
                     sales = umag.get_sales(store_id, obj_id, beg_date, end_date)
                     if sales:
-                        write_file(file_path, sales)
+                        write_file_binary(file_path, sales)
                         UMAG_LOGGER.info(f'Sales was writen to {file_name}\n')
                     else:
                         err_count += 1
