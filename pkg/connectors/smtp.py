@@ -1,5 +1,8 @@
+import smtplib
+import ssl
 from pkg.config import CONFIG
 from pkg.utils.decorators import singleton
+from pkg.utils.errors import get_raised_error
 from pkg.utils.logger import SMTP_LOGGER
 
 
@@ -34,8 +37,21 @@ class SmtpServer:
     def is_initialized(self):
         return self.__initialized
 
-    def send_emails(self):
-        emails_count = len(self.__receivers)
-        for (i, email) in enumerate(self.__receivers, 1):
-            new_line = '\n' if i == emails_count else ''
-            SMTP_LOGGER.info(f'Sending notify to {email}{new_line}')
+    def send_emails(self, subject, text):
+        try:
+            context = ssl.create_default_context()
+            emails_count = len(self.__receivers)
+            message = f'Subject: {subject}\n\n{text}'
+
+            SMTP_LOGGER.info('Sending emails...')
+            with smtplib.SMTP_SSL(self.__host, self.__port, context=context) as server:
+                server.login(self.__login, self.__password)
+                for (i, email) in enumerate(self.__receivers, 1):
+                    new_line = '\n' if i == emails_count else ''
+                    try:
+                        server.sendmail(self.__sender, email, message)
+                        SMTP_LOGGER.info(f'Email to {email} was successfully sent{new_line}')
+                    except:
+                        SMTP_LOGGER.error(f'Email to {email} wasn\'t sent{new_line}')
+        except:
+            SMTP_LOGGER.error(get_raised_error(True))

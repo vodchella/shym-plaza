@@ -106,7 +106,10 @@ def upload_files(delete_uploaded_files: bool):
 def send_errors_notify():
     with SmtpServer() as smtp:
         if smtp.is_initialized():
-            smtp.send_emails()
+            smtp.send_emails(
+                f'{APP_NAME} notification',
+                'Some errors occurred while uploading data. See server logs for details'
+            )
 
 
 if __name__ == '__main__':
