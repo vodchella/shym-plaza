@@ -16,6 +16,7 @@ from pkg.utils.logger import DEFAULT_LOGGER, FTP_LOGGER, UMAG_LOGGER
 
 
 def download_sales(beg_date: datetime, end_date: datetime):
+    err_count = 0
     with UmagServer() as umag:
         UMAG_LOGGER.info(f'Getting sales from UMAG {umag}...')
 
@@ -26,7 +27,6 @@ def download_sales(beg_date: datetime, end_date: datetime):
 
         UMAG_LOGGER.info(f'Period specified: {beg_date_str} - {end_date_str}\n')
 
-        err_count = 0
         for store in CONFIG['stores']:
             obj_id = store['obj_id']
             store_id = store['id']
@@ -52,6 +52,8 @@ def download_sales(beg_date: datetime, end_date: datetime):
                 err_count += 1
 
         UMAG_LOGGER.info(f'Processed stores/errors: {len(CONFIG["stores"])}/{err_count}\n')
+
+    return err_count
 
 
 def upload_files(delete_uploaded_files: bool):
