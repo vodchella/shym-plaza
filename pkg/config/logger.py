@@ -35,6 +35,10 @@ LOG_CONFIG = {
             'level': 'DEBUG',
             'handlers': ['internal', 'timedRotatingFile']
         },
+        SMTP_LOGGER_NAME: {
+            'level': 'DEBUG',
+            'handlers': ['internal', 'timedRotatingFile']
+        },
         UMAG_LOGGER_NAME: {
             'level': 'DEBUG',
             'handlers': ['internal', 'timedRotatingFile']

@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from ftplib import FTP
 from pkg.arg_parser import create_argparse
 from pkg.config import CONFIG, CFG_FILE
+from pkg.connectors.smtp import SmtpServer
 from pkg.connectors.umag import UmagServer
 from pkg.constants.date_formats import DATE_FORMAT_FULL, DATE_FORMAT_FILE, DATE_FORMAT
 from pkg.constants.version import SOFTWARE_VERSION, APP_NAME
@@ -102,6 +103,12 @@ def upload_files(delete_uploaded_files: bool):
                 ftp.quit()
 
 
+def send_errors_notify():
+    with SmtpServer() as smtp:
+        if smtp.is_initialized():
+            smtp.send_emails()
+
+
 if __name__ == '__main__':
     if sys.version_info < (3, 8):
         panic('We need minimum Python version 3.8 to run. Current version: %s.%s.%s' % sys.version_info[:3])
@@ -127,7 +134,8 @@ if __name__ == '__main__':
 
         beg = datetime.strptime(beg_str, DATE_FORMAT_FULL)
         end = datetime.strptime(end_str, DATE_FORMAT_FULL)
-        download_sales(beg, end)
+        if download_sales(beg, end) > 0:
+            send_errors_notify()
 
     if args.upload_to_ftp:
         upload_files(args.delete_uploaded_files)
