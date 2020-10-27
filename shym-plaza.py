@@ -46,7 +46,7 @@ def download_sales(beg_date: datetime, end_date: datetime):
                     else:
                         err_count += 1
                 else:
-                    UMAG_LOGGER.error(f'Can\'t authenticate on Umag\n')
+                    UMAG_LOGGER.error(f'Can\'t authenticate on UMAG\n')
                     err_count += 1
             except:
                 UMAG_LOGGER.error(get_raised_error(True))
