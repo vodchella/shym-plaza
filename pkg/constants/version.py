@@ -2,7 +2,7 @@ from pkg.utils.git import get_top_commit
 
 
 APP_NAME = 'ShymPlaza Bridge'
-APP_VERSION = '0.01'
+APP_VERSION = '0.02'
 
 
 def get_app_version_full():
