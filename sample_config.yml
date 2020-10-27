@@ -2,6 +2,14 @@ umag:
   host: localhost
   port: 8080
   https: false
+smtp:
+  host: in-v3.mailjet.com
+  port: 465
+  login: some_login
+  password: strong_password
+  sender: sender@email.com
+  receivers:
+    - receiver@email.com
 ftp:
   - id: 1
     host: ftp.drivehq.com
